@@ -1,36 +1,22 @@
-#include <DHT.h>
-#include <DHT_U.h>
-
-#include <GSMSim.h>
-
-
-// End Semester Project
-// Incubator by group 17
-
 #include <LiquidCrystal_I2C.h>
 
 LiquidCrystal_I2C lcd(0x27, 20, 4);
+
 #include <SoftwareSerial.h>
 
-#include "dht.h"
+#include "DHT.h"
 
 #define DHTPIN 2
 #define DHTTYPE DHT11
 DHT dht(DHTPIN, DHTTYPE);
 int fan = 7;
 int bulb = 6;
-/*
-  // initialization
-  int fan = 6;
-  int bulb = 8;
-  int ldrpin = 9;
-  float temp;
-  int temppin=0;
-  int ldrstate = 0; */
+int ldrpin = 9;
+int ldrstate = 0; 
 
 float temp, t;
 
-String name[6] {"BABY INCUBATOR", "SSALI BENJAMIN", "GODANA EMIRU", "LUKAMBUUZI FRED", "BUGOSI PHIONAH", "NABUNNYA IMMARK"};
+String name[6] {"BABY INCUBATOR", "SSALI BENJAMIN", "GODANA EMIRU", "LUKAMBUUZI FRED", "BIGOSI PHIONAH", "NABUNNYA IMMARK"};
 String nameid[6] = { "GROUP 17", "18/U/24933/EVE", "18/U/21516/EVE", "18/U/26540/EVE", "18/U/36037/EVE", ""};
 int i;
 
@@ -46,7 +32,8 @@ void setup()
   dht.begin();
   Serial.begin (9600); // Setting the Baud Rate
   lcd.begin (16, 2); // Activating both Rows of LCD
-
+  pinMode(bulb, HIGH);
+  pinMode(fan, HIGH);
 
   //information and identification of the group members including the students numbers
 
@@ -63,20 +50,18 @@ void setup()
 }
 void loop()
 {
-/*  temp = dht.readTemperature();
-float  humidity = dht.readHumidity();
-  lcd.setCursor(0,0); 
+  // temp = dht.readTemperature();
+  float  humidity = dht.readHumidity();
+  lcd.setCursor(0, 0);
   lcd.print("Temp: ");
   lcd.print(temp);
   lcd.print((char)223);
   lcd.print("C");
-  lcd.setCursor(1,1);
+  lcd.setCursor(1, 1);
   lcd.print("Humidity: ");
   lcd.print(humidity);
   lcd.print("%");
-  //delay(1000);
-  //lcd.clear();
-//  delay(2000);*/
+  delay(2000);
   float t = dht.readTemperature();
   float f = dht.readTemperature(true);
   Serial.print(F("Temperature: "));
@@ -86,7 +71,7 @@ float  humidity = dht.readHumidity();
   Serial.println(F("°F"));
   delay(1000);
   //code to check on the different temperatures
-  if (t >= 35 && t <= 39) {
+  if (t >= 28 && t <= 30) {
 
     if (temp == (t + 1)) {
       temp = (t + 1);
@@ -120,9 +105,9 @@ float  humidity = dht.readHumidity();
     }
 
   }
-  else if(t<35){
-       digitalWrite(bulb,HIGH);
-        if (temp == (t + 1)) {
+  else if (t < 28) {
+    digitalWrite(bulb, HIGH);
+    if (temp == (t + 1)) {
       temp = (t + 1);
       lcd.clear();
       lcd.setCursor(1, 1);
@@ -153,8 +138,41 @@ float  humidity = dht.readHumidity();
       lcd.clear();
     }
   }
-  else{
-        if (temp == (t + 1)) {
+  else if (t > 30) {
+    digitalWrite(bulb, HIGH);
+    if (temp == (t + 1)) {
+      temp = (t + 1);
+      lcd.clear();
+      lcd.setCursor(1, 1);
+      lcd.print(F("Temp: "));
+      lcd.print(temp);
+      lcd.print("LOW TEMPERATURE");
+      delay(1000);
+      lcd.clear();
+    }
+    else if (temp == (t - 1)) {
+      temp = (t - 1);
+      lcd.clear();
+      lcd.setCursor(1, 1);
+      lcd.print(F("Temp: "));
+      lcd.print(temp);
+      lcd.print("LOW TEMPERATURE");
+      delay(1000);
+      lcd.clear();
+    }
+    else {
+      Serial.print(F("Temperature: "));
+      Serial.print(t);
+      Serial.print(F("°C "));
+      Serial.print(f);
+      Serial.println(F("°F"));
+      lcd.print("LOW TEMPERATURE");
+      delay(1000);
+      lcd.clear();
+    }
+  }
+  else {
+    if (temp == (t + 1)) {
       temp = (t + 1);
       lcd.clear();
       lcd.setCursor(1, 1);
